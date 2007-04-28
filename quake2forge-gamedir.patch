@@ -1,0 +1,13 @@
+--- quake2-0.3/src/files.c.orig	2007-04-28 14:10:01.482503000 +0200
++++ quake2-0.3/src/files.c	2007-04-28 21:51:04.594934028 +0200
+@@ -724,7 +724,9 @@
+ 		Cvar_FullSet ("gamedir", dir, CVAR_SERVERINFO|CVAR_NOSET);
+ 		if (fs_cddir->string[0])
+ 			FS_AddGameDirectory (va("%s/%s", fs_cddir->string, dir) );
+-		FS_AddGameDirectory (va("%s/%s", fs_basedir->string, dir) );
++		/*FS_AddGameDirectory (va("%s/%s", fs_basedir->string, dir) );*/
++		FS_AddGameDirectory (va(PKGLIBDIR"/%s", dir) );
++		FS_AddGameDirectory (va(PKGDATADIR"/%s", dir) );
+ 		FS_AddHomeAsGameDirectory (dir);
+ 	}
+ }
