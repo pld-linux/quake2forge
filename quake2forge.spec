@@ -23,6 +23,7 @@ Patch0:		%{name}-stupid_nvidia_bug.patch
 Patch1:		%{name}-gl.patch
 Patch2:		%{name}-ac.patch
 Patch3:		%{name}-fix.patch
+Patch4:		%{name}-gamedir.patch
 URL:		http://www.quakeforge.net/
 BuildRequires:	OpenGL-GLX-devel
 BuildRequires:	SDL-devel
@@ -42,8 +43,8 @@ Obsoletes:	quake2-static <= 1:0.3
 Obsoletes:	quake2 <= 1:0.3
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_gamelibdir	%{_libdir}/games/quake2
-%define		_gamedatadir	%{_datadir}/games/quake2
+%define		_gamelibdir	%{_libdir}/quake2
+%define		_gamedatadir	%{_datadir}/quake2
 %define		_gamehomedir	/var/games/quake2
 
 # because of gl_image.c:1559
@@ -236,18 +237,17 @@ Wtyczka dźwięku ao dla Quake2Forge.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
-%{__aclocal}
-%{__autoheader}
 %{__libtoolize}
-%{__automake}
+%{__aclocal}
 %{__autoconf}
+%{__autoheader}
+%{__automake}
 
 %configure \
 	--disable-static \
-	--libdir=%{_libdir}/games \
-	--datadir=%{_datadir}/games \
 	--enable-sdlsound
 
 %{__make}
@@ -262,13 +262,6 @@ install -d $RPM_BUILD_ROOT{%{_gamedatadir}/baseq2,%{_gamehomedir}/.quake2/baseq2
 	$RPM_BUILD_ROOT{/etc/sysconfig,/etc/rc.d/init.d} \
 	$RPM_BUILD_ROOT{%{_pixmapsdir},%{_desktopdir}}
 
-#$RPM_BUILD_ROOT%{_gamedir}/baseq2/players/{crakhor,cyborg,female,male}
-
-#for i in crakhor cyborg female male ; do
-#        install baseq2/players/$i/* $RPM_BUILD_ROOT%{_gamedir}/baseq2/players/$i
-#done
-#install baseq2/pak2.pak        $RPM_BUILD_ROOT%{_gamedir}/quake2/baseq2
-
 install %{SOURCE2} $RPM_BUILD_ROOT%{_gamehomedir}/.quake2/baseq2/server.cfg
 install %{SOURCE7} $RPM_BUILD_ROOT%{_gamehomedir}/.screenrc
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/q2ded
@@ -280,9 +273,8 @@ rm -rf _doc
 cp -a docs _doc
 rm -rf _doc/{CVS,Makefile*,ctf/CVS,ctf/Makefile*}
 
-rm -f $RPM_BUILD_ROOT%{_libdir}/games/quake2/snd_{alsa,ao,oss,sdl}.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/games/quake2/ref_{soft,softx,sdlgl,softsdl,glx}.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/games/quake2/{baseq2,ctf}/game.la
+rm -f $RPM_BUILD_ROOT%{_gamelibdir}/*.la
+rm -f $RPM_BUILD_ROOT%{_gamelibdir}/*/game.la
 rm -f $RPM_BUILD_ROOT%{_gamedatadir}/baseq2/config.cfg
 
 %clean
@@ -348,7 +340,6 @@ fi
 %files 3dfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_gamelibdir}/ref_tdfx.so
-%{_gamelibdir}/ref_tdfx.la
 
 %files glx
 %defattr(644,root,root,755)
