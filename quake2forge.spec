@@ -1,8 +1,7 @@
 # TODO:
 # - ipv6 support
-Summary:	Quake2Forge for Linux
-Summary(pl.UTF-8):	Quake2Forge dla Linuksa
-Summary(pt_BR.UTF-8):	Quake2Forge para Linux
+Summary:	Quake2Forge - improved version of id Software's classic Quake II engine
+Summary(pl.UTF-8):	Quake2Forge - ulepszona wersja klasycznego silnika Quake II firmy id Software
 Name:		quake2forge
 Version:	0.3
 Release:	0.1
@@ -49,13 +48,12 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_gamehomedir	/var/games/quake2
 
 %description
-Quake2Forge for Linux!
+Quake2Forge - improved version of id Software's classic Quake II
+engine.
 
 %description -l pl.UTF-8
-Quake2Forge dla Linuksa!
-
-%description -l pt_BR.UTF-8
-Quake2Forge para Linux!
+Quake2Forge - ulepszona wersja klasycznego silnika Quake II firmy id
+Software.
 
 %package server
 Summary:	Quake2Forge server
