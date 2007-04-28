@@ -189,34 +189,6 @@ Play Quake2Forge using software X11 renderer.
 %description x11 -l pl.UTF-8
 Zagraj w Quake2Forge przy użyciu programowego renderowania w X11.
 
-%package snd-oss
-Summary:	Quake2Forge OSS sound plugin
-Summary(pl.UTF-8):	Wtyczka dźwięku OSS dla Quake2Forge
-Group:		Applications/Games
-Requires:	%{name} = %{version}-%{release}
-Provides:	%{name}-sound-plugin = %{version}-%{release}
-Obsoletes:	quake2-snd-oss <= 1:0.3
-
-%description snd-oss
-OSS sound plugin for Quake2Forge.
-
-%description snd-oss -l pl.UTF-8
-Wtyczka dźwięku OSS dla Quake2Forge.
-
-%package snd-sdl
-Summary:	Quake2Forge SDL sound plugin
-Summary(pl.UTF-8):	Wtyczka dźwięku SDL dla Quake2Forge
-Group:		Applications/Games
-Requires:	%{name} = %{version}-%{release}
-Provides:	%{name}-sound-plugin = %{version}-%{release}
-Obsoletes:	quake2-snd-sdl <= 1:0.3
-
-%description snd-sdl
-SDL sound plugin for Quake2Forge.
-
-%description snd-sdl -l pl.UTF-8
-Wtyczka dźwięku SDL dla Quake2Forge.
-
 %package snd-alsa
 Summary:	Quake2Forge ALSA sound plugin
 Summary(pl.UTF-8):	Wtyczka dźwięku ALSA dla Quake2Forge
@@ -244,6 +216,34 @@ Ao sound plugin for Quake2Forge.
 
 %description snd-ao -l pl.UTF-8
 Wtyczka dźwięku ao dla Quake2Forge.
+
+%package snd-oss
+Summary:	Quake2Forge OSS sound plugin
+Summary(pl.UTF-8):	Wtyczka dźwięku OSS dla Quake2Forge
+Group:		Applications/Games
+Requires:	%{name} = %{version}-%{release}
+Provides:	%{name}-sound-plugin = %{version}-%{release}
+Obsoletes:	quake2-snd-oss <= 1:0.3
+
+%description snd-oss
+OSS sound plugin for Quake2Forge.
+
+%description snd-oss -l pl.UTF-8
+Wtyczka dźwięku OSS dla Quake2Forge.
+
+%package snd-sdl
+Summary:	Quake2Forge SDL sound plugin
+Summary(pl.UTF-8):	Wtyczka dźwięku SDL dla Quake2Forge
+Group:		Applications/Games
+Requires:	%{name} = %{version}-%{release}
+Provides:	%{name}-sound-plugin = %{version}-%{release}
+Obsoletes:	quake2-snd-sdl <= 1:0.3
+
+%description snd-sdl
+SDL sound plugin for Quake2Forge.
+
+%description snd-sdl -l pl.UTF-8
+Wtyczka dźwięku SDL dla Quake2Forge.
 
 %package rogue
 Summary:	Quake2Forge: Ground Zero (mission pack)
@@ -425,10 +425,6 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_gamelibdir}/ref_softx.so
 
-%files snd-oss
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_gamelibdir}/snd_oss.so
-
 %files snd-alsa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_gamelibdir}/snd_alsa.so
@@ -436,6 +432,10 @@ fi
 %files snd-ao
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_gamelibdir}/snd_ao.so
+
+%files snd-oss
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_gamelibdir}/snd_oss.so
 
 %files snd-sdl
 %defattr(644,root,root,755)
