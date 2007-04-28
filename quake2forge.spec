@@ -231,7 +231,7 @@ Ao sound plugin for Quake2Forge.
 Wtyczka dźwięku ao dla Quake2Forge.
 
 %prep
-%setup -q
+%setup -q -n quake2-%{version}
 %patch0
 %patch1 -p1
 
