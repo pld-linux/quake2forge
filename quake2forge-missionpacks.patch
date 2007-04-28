@@ -114,5 +114,5 @@
 -#game_la_LDFLAGS = -module -avoid-version -rpath $(pkglibdir)
 +#game_la_CFLAGS = -fPIC -Wall -Werror -pipe @OPT_CFLAGS@
 +game_la_CFLAGS = -I$(top_srcdir)/src -fPIC -pipe @OPT_CFLAGS@
-+game_la_LDFLAGS = -module -avoid-version -rpath $(pkglibdir)
++game_la_LDFLAGS = -module -avoid-version
  endif # DO_XATRIX
