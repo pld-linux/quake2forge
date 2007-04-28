@@ -1,12 +1,17 @@
 # TODO:
 # - ipv6 support
+#
+# Conditional build:
+%bcond_with	rogue	# with Rogue ("Ground Zero") Mission Pack  (non-distributable package)
+%bcond_with	xatrix	# with Xatrix ("The Reckoning") Mission Pack  (non-distributable package)
+#
 Summary:	Quake2Forge - improved version of id Software's classic Quake II engine
 Summary(pl.UTF-8):	Quake2Forge - ulepszona wersja klasycznego silnika Quake II firmy id Software
 Name:		quake2forge
 Version:	0.3
 Release:	0.1
-License:	GPL (for code only)
-Group:		X11/Applications/Games
+License:	GPL (for main code only)
+Group:		Applications/Games
 # http://dl.sourceforge.net/quake/quake2-%{version}.tar.gz [but no 0.3 yet]
 # ftp://ftp.quakeforge.net/quake2forge/quake2-%{version}.tar.gz [dead]
 Source0:	quake2-%{version}.tar.gz
@@ -19,11 +24,20 @@ Source4:	%{name}.png
 Source5:	%{name}.desktop
 Source6:	q2ded.sysconfig
 Source7:	q2ded.screenrc
+Source8:	%{name}-rogue.desktop
+Source9:	%{name}-xatrix.desktop
+Source10:	ftp://ftp.idsoftware.com/idstuff/quake2/source/roguesrc320.shar.Z
+# Source10-md5:	7d5e052839c9e629bad0a6570aa70554
+Source11:	ftp://ftp.idsoftware.com/idstuff/quake2/source/xatrixsrc320.shar.Z
+# Source11-md5:	41fc4ecc4f25c068e7d1f488bd4a1e1a
 Patch0:		%{name}-stupid_nvidia_bug.patch
 Patch1:		%{name}-gl.patch
 Patch2:		%{name}-ac.patch
 Patch3:		%{name}-fix.patch
 Patch4:		%{name}-gamedir.patch
+Patch5:		%{name}-missionpacks.patch
+Patch6:		%{name}-rogue-fix.patch
+Patch7:		%{name}-xatrix-fix.patch
 URL:		http://www.quakeforge.net/
 BuildRequires:	OpenGL-GLX-devel
 BuildRequires:	SDL-devel
@@ -178,7 +192,7 @@ Zagraj w Quake2Forge przy użyciu programowego renderowania w X11.
 %package snd-oss
 Summary:	Quake2Forge OSS sound plugin
 Summary(pl.UTF-8):	Wtyczka dźwięku OSS dla Quake2Forge
-Group:		X11/Applications/Games
+Group:		Applications/Games
 Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-sound-plugin = %{version}-%{release}
 Obsoletes:	quake2-snd-oss <= 1:0.3
@@ -186,13 +200,13 @@ Obsoletes:	quake2-snd-oss <= 1:0.3
 %description snd-oss
 OSS sound plugin for Quake2Forge.
 
-%description -l pl.UTF-8
+%description snd-oss -l pl.UTF-8
 Wtyczka dźwięku OSS dla Quake2Forge.
 
 %package snd-sdl
 Summary:	Quake2Forge SDL sound plugin
 Summary(pl.UTF-8):	Wtyczka dźwięku SDL dla Quake2Forge
-Group:		X11/Applications/Games
+Group:		Applications/Games
 Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-sound-plugin = %{version}-%{release}
 Obsoletes:	quake2-snd-sdl <= 1:0.3
@@ -200,13 +214,13 @@ Obsoletes:	quake2-snd-sdl <= 1:0.3
 %description snd-sdl
 SDL sound plugin for Quake2Forge.
 
-%description -l pl.UTF-8
+%description snd-sdl -l pl.UTF-8
 Wtyczka dźwięku SDL dla Quake2Forge.
 
 %package snd-alsa
 Summary:	Quake2Forge ALSA sound plugin
 Summary(pl.UTF-8):	Wtyczka dźwięku ALSA dla Quake2Forge
-Group:		X11/Applications/Games
+Group:		Applications/Games
 Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-sound-plugin = %{version}-%{release}
 Obsoletes:	quake2-snd-alsa <= 1:0.3
@@ -214,13 +228,13 @@ Obsoletes:	quake2-snd-alsa <= 1:0.3
 %description snd-alsa
 ALSA sound plugin for Quake2Forge.
 
-%description -l pl.UTF-8
+%description snd-alsa -l pl.UTF-8
 Wtyczka dźwięku ALSA dla Quake2Forge.
 
 %package snd-ao
 Summary:	Quake2Forge ao sound plugin
 Summary(pl.UTF-8):	Wtyczka dźwięku ao dla Quake2Forge
-Group:		X11/Applications/Games
+Group:		Applications/Games
 Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-sound-plugin = %{version}-%{release}
 Obsoletes:	quake2-snd-ao <= 1:0.3
@@ -228,8 +242,34 @@ Obsoletes:	quake2-snd-ao <= 1:0.3
 %description snd-ao
 Ao sound plugin for Quake2Forge.
 
-%description -l pl.UTF-8
+%description snd-ao -l pl.UTF-8
 Wtyczka dźwięku ao dla Quake2Forge.
+
+%package rogue
+Summary:	Quake2Forge: Ground Zero (mission pack)
+Summary(pl.UTF-8):	Quake2Forge: Ground Zero (zestaw misji)
+License:	GPL+Limited Program Source Code License (non-distributable in binary form)
+Group:		Applications/Games
+Requires:	%{name} = %{version}-%{release}
+
+%description rogue
+Quake2Forge: Ground Zero (mission pack).
+
+%description rogue -l pl.UTF-8
+Quake2Forge: Ground Zero (zestaw misji).
+
+%package xatrix
+Summary:	Quake2Forge: The Reckoning (mission pack)
+Summary(pl.UTF-8):	Quake2Forge: The Reckoning (zestaw misji)
+License:	GPL+Limited Program Source Code License (non-distributable in binary form)
+Group:		Applications/Games
+Requires:	%{name} = %{version}-%{release}
+
+%description xatrix
+Quake2Forge: The Reckoning (mission pack).
+
+%description xatrix -l pl.UTF-8
+Quake2Forge: The Reckoning (zestaw misji).
 
 %prep
 %setup -q -n quake2-%{version}
@@ -238,6 +278,23 @@ Wtyczka dźwięku ao dla Quake2Forge.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+
+%if %{with rogue}
+cd src/rogue
+gzip -dc %{SOURCE10} | %{__sed} s/"^more "/"cat >LICENSE.rogue "/ >rogue.shar
+echo yes| sh rogue.shar
+cd ../..
+%patch6 -p1
+%endif
+
+%if %{with xatrix}
+cd src/xatrix
+gunzip -c %{SOURCE11} | %{__sed} s/"^more "/"cat >LICENSE.xatrix "/ >xatrix.shar
+echo yes| sh xatrix.shar
+cd ../..
+%patch7 -p1
+%endif
 
 %build
 %{__libtoolize}
@@ -268,6 +325,13 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/q2ded
 install %{SOURCE4} $RPM_BUILD_ROOT%{_pixmapsdir}
 install %{SOURCE5} $RPM_BUILD_ROOT%{_desktopdir}/%{name}.desktop
 install %{SOURCE6} $RPM_BUILD_ROOT/etc/sysconfig/q2ded
+
+%if %{with rogue}
+install %{SOURCE8} $RPM_BUILD_ROOT%{_desktopdir}/%{name}-rogue.desktop
+%endif
+%if %{with xatrix}
+install %{SOURCE8} $RPM_BUILD_ROOT%{_desktopdir}/%{name}-xatrix.desktop
+%endif
 
 rm -rf _doc
 cp -a docs _doc
@@ -376,3 +440,21 @@ fi
 %files snd-sdl
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_gamelibdir}/snd_sdl.so
+
+%if %{with rogue}
+%files rogue
+%defattr(644,root,root,755)
+%doc src/rogue/LICENSE.rogue
+%dir %{_gamelibdir}/rogue
+%attr(755,root,root) %{_gamelibdir}/rogue/game.so
+%{_desktopdir}/quake2forge-rogue.desktop
+%endif
+
+%if %{with xatrix}
+%files xatrix
+%defattr(644,root,root,755)
+%doc src/xatrix/LICENSE.xatrix
+%dir %{_gamelibdir}/xatrix
+%attr(755,root,root) %{_gamelibdir}/xatrix/game.so
+%{_desktopdir}/quake2forge-xatrix.desktop
+%endif
