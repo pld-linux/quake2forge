@@ -21,19 +21,18 @@ Source6:	q2ded.sysconfig
 Source7:	q2ded.screenrc
 Patch0:		%{name}-stupid_nvidia_bug.patch
 Patch1:		%{name}-gl.patch
+Patch2:		%{name}-ac.patch
+Patch3:		%{name}-fix.patch
 URL:		http://www.quakeforge.net/
-BuildRequires:	OpenGL-devel
+BuildRequires:	OpenGL-GLX-devel
 BuildRequires:	SDL-devel
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.59-9
 BuildRequires:	automake
 BuildRequires:	libao-devel >= 0.8.5
-BuildRequires:	libltdl-devel
 BuildRequires:	libtool
 BuildRequires:	rpmbuild(macros) >= 1.268
-BuildRequires:	sed >= 4.0
 BuildRequires:	svgalib-devel
 BuildRequires:	unzip
-#BuildRequires:	xorg-lib-libSM-devel ?
 BuildRequires:	xorg-lib-libXext-devel
 BuildRequires:	xorg-lib-libXext-devel
 BuildRequires:	xorg-lib-libXxf86dga-devel
@@ -46,6 +45,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_gamelibdir	%{_libdir}/games/quake2
 %define		_gamedatadir	%{_datadir}/games/quake2
 %define		_gamehomedir	/var/games/quake2
+
+# because of gl_image.c:1559
+%define		specflags	-fno-strict-aliasing
 
 %description
 Quake2Forge - improved version of id Software's classic Quake II
@@ -232,24 +234,21 @@ Wtyczka dźwięku ao dla Quake2Forge.
 %setup -q -n quake2-%{version}
 %patch0
 %patch1 -p1
-
-%{__sed} -i -e 's/libltdl//' Makefile.am
-%{__sed} -i -e 's/AC_LIBLTDL_CONVENIENCE/AC_LIBLTDL_INSTALLABLE/' configure.in
+%patch2 -p1
+%patch3 -p1
 
 %build
 %{__aclocal}
 %{__autoheader}
-%{__libtoolize} --ltdl --automake
+%{__libtoolize}
 %{__automake}
 %{__autoconf}
 
 %configure \
 	--disable-static \
-	--enable-ltdl-install=no \
 	--libdir=%{_libdir}/games \
 	--datadir=%{_datadir}/games \
-	--enable-sdlsound \
-	--with-opengl
+	--enable-sdlsound
 
 %{__make}
 
