@@ -1,0 +1,30 @@
+--- quake2-0.3/configure.in.orig	2004-03-16 11:07:38.000000000 +0100
++++ quake2-0.3/configure.in	2007-04-28 13:16:11.086413309 +0200
+@@ -32,6 +32,7 @@
+ dnl -------------------
+ 
+ AC_PROG_CC
++AM_PROG_AS
+ 
+ dnl libtool is evil
+ AC_PROG_LIBTOOL
+--- quake2-0.3/src/Makefile.am.orig	2004-03-15 13:50:39.000000000 +0100
++++ quake2-0.3/src/Makefile.am	2007-04-28 13:18:16.817578320 +0200
+@@ -130,7 +130,7 @@
+ if BUILD_GLX
+ ref_glx_la_SOURCES = $(REF_GL_COMMON) gl_glx.c
+ ref_glx_la_CFLAGS = $(std_cflags) -fPIC @X_CFLAGS@
+-ref_glx_la_LIBADD = @X_PRE_LIBS@ @X_LIBS@ @XTRA_LIBS@ @X_EXTRA_LIBS@ @DL_LIBS@
++ref_glx_la_LIBADD = @X_LIBS@ @XTRA_LIBS@ @X_EXTRA_LIBS@ @DL_LIBS@
+ ref_glx_la_LDFLAGS = $(module_ldflags)
+ endif
+ 
+@@ -170,7 +170,7 @@
+ if BUILD_SOFTX
+ ref_softx_la_SOURCES = $(REF_SOFT_COMMON) $(REF_SOFT_ASM) rw_x11.c
+ ref_softx_la_CFLAGS = $(std_cflags) -fPIC @X_CFLAGS@
+-ref_softx_la_LIBADD = @X_PRE_LIBS@ @X_LIBS@ @XTRA_LIBS@ @X_EXTRA_LIBS@
++ref_softx_la_LIBADD = @X_LIBS@ @XTRA_LIBS@ @X_EXTRA_LIBS@
+ ref_softx_la_LDFLAGS = $(module_ldflags)
+ endif
+ 
