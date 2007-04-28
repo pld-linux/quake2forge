@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Quake II
-Comment=Quake2 for Linux
-Comment[pl]=Quake2 dla Linuksa
+Name=Quake2Forge
+Comment=Quake2Forge for Linux
+Comment[pl]=Quake2Forge dla Linuksa
 Exec=quake2
 Icon=quake2.png 
 Terminal=false
