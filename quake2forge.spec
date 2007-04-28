@@ -25,7 +25,6 @@ Patch1:		%{name}-gl.patch
 URL:		http://www.quakeforge.net/
 BuildRequires:	OpenGL-devel
 BuildRequires:	SDL-devel
-BuildRequires:	XFree86-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libao-devel >= 0.8.5
@@ -35,6 +34,11 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 BuildRequires:	svgalib-devel
 BuildRequires:	unzip
+#BuildRequires:	xorg-lib-libSM-devel ?
+BuildRequires:	xorg-lib-libXext-devel
+BuildRequires:	xorg-lib-libXext-devel
+BuildRequires:	xorg-lib-libXxf86dga-devel
+BuildRequires:	xorg-lib-libXxf86vm-devel
 Requires:	%{name}-renderer = %{version}-%{release}
 Obsoletes:	quake2-static <= 1:0.3
 Obsoletes:	quake2 <= 1:0.3
@@ -247,7 +251,7 @@ Wtyczka dźwięku ao dla Quake2Forge.
 	--libdir=%{_libdir}/games \
 	--datadir=%{_datadir}/games \
 	--enable-sdlsound \
-	--with-opengl=/usr/X11R6
+	--with-opengl
 
 %{__make}
 
