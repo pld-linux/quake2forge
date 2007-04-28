@@ -332,8 +332,8 @@ fi
 #%%{_gamedir}/baseq2/players
 %dir %{_gamedatadir}
 %dir %{_gamedatadir}/baseq2
-%{_pixmapsdir}/quake2.png
-%{_desktopdir}/quake2.desktop
+%{_pixmapsdir}/quake2forge.png
+%{_desktopdir}/quake2forge.desktop
 
 %files server
 %defattr(644,root,root,755)
