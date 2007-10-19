@@ -41,6 +41,7 @@ Patch7:		%{name}-xatrix-fix.patch
 URL:		http://www.quakeforge.net/
 BuildRequires:	OpenGL-GLX-devel
 BuildRequires:	SDL-devel
+BuildRequires:	XFree86-devel
 BuildRequires:	autoconf >= 2.59-9
 BuildRequires:	automake
 BuildRequires:	libao-devel >= 0.8.5
@@ -48,10 +49,6 @@ BuildRequires:	libtool
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	svgalib-devel
 BuildRequires:	unzip
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXxf86dga-devel
-BuildRequires:	xorg-lib-libXxf86vm-devel
 Requires:	%{name}-common = %{version}-%{release}
 Requires:	%{name}-renderer = %{version}-%{release}
 Obsoletes:	quake2 <= 1:0.3
