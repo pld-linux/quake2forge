@@ -9,7 +9,7 @@ Summary:	Quake2Forge - improved version of id Software's classic Quake II engine
 Summary(pl.UTF-8):	Quake2Forge - ulepszona wersja klasycznego silnika Quake II firmy id Software
 Name:		quake2forge
 Version:	0.3
-Release:	0.1
+Release:	1
 License:	GPL (for main code only)
 Group:		Applications/Games
 # http://dl.sourceforge.net/quake/quake2-%{version}.tar.gz [but no 0.3 yet]
@@ -52,9 +52,10 @@ BuildRequires:	xorg-lib-libXext-devel
 BuildRequires:	xorg-lib-libXext-devel
 BuildRequires:	xorg-lib-libXxf86dga-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
+Requires:	%{name}-common = %{version}-%{release}
 Requires:	%{name}-renderer = %{version}-%{release}
-Obsoletes:	quake2-static <= 1:0.3
 Obsoletes:	quake2 <= 1:0.3
+Obsoletes:	quake2-static <= 1:0.3
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_gamelibdir	%{_libdir}/quake2
@@ -72,6 +73,13 @@ engine.
 Quake2Forge - ulepszona wersja klasycznego silnika Quake II firmy id
 Software.
 
+%package common
+Summary:	Quake2Forge common files
+Group:		Applications/Games
+
+%description common
+Quake2Forge common files.
+
 %package server
 Summary:	Quake2Forge server
 Summary(pl.UTF-8):	Serwer Quake2Forge
@@ -84,7 +92,7 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-common = %{version}-%{release}
 Requires:	rc-scripts
 Requires:	screen
 Provides:	group(quake2)
@@ -378,6 +386,11 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS HACKING README TODO _doc/*
+%{_pixmapsdir}/quake2forge.png
+%{_desktopdir}/quake2forge.desktop
+
+%files common
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/quake2
 %dir %{_gamelibdir}
 %dir %{_gamelibdir}/baseq2
@@ -388,8 +401,6 @@ fi
 #%%{_gamedir}/baseq2/players
 %dir %{_gamedatadir}
 %dir %{_gamedatadir}/baseq2
-%{_pixmapsdir}/quake2forge.png
-%{_desktopdir}/quake2forge.desktop
 
 %files server
 %defattr(644,root,root,755)
