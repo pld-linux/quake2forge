@@ -76,6 +76,7 @@ Software.
 %package common
 Summary:	Quake2Forge common files
 Group:		Applications/Games
+Provides:	quake2-common
 
 %description common
 Quake2Forge common files.
