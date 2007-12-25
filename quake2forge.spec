@@ -9,7 +9,7 @@ Summary:	Quake2Forge - improved version of id Software's classic Quake II engine
 Summary(pl.UTF-8):	Quake2Forge - ulepszona wersja klasycznego silnika Quake II firmy id Software
 Name:		quake2forge
 Version:	0.3
-Release:	1
+Release:	3
 License:	GPL (for main code only)
 Group:		Applications/Games
 # http://dl.sourceforge.net/quake/quake2-%{version}.tar.gz [but no 0.3 yet]
