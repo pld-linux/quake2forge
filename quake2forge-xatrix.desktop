@@ -2,9 +2,8 @@
 Name=Quake II: The Reckoning
 Comment=Quake2Forge Mission Pack "The Reckoning" (xatrix)
 Exec=quake2 +set game xatrix
-Icon=quake2.png 
+Icon=quake2 
 Terminal=false
 Type=Application
 Categories=Game;X-FPPGame;
-Encoding=UTF-8
 # vi: encoding=utf-8
