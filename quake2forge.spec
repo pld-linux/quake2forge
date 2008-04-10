@@ -314,6 +314,9 @@ cd ../..
 
 %configure \
 	--disable-static \
+%ifarch sparc sparcv9 sparc64
+	--disable-warn \
+%endif
 	--enable-sdlsound
 
 %{__make}
