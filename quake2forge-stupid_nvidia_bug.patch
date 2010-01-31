@@ -1,24 +1,25 @@
---- src/files.c~	2002-12-23 09:15:00.000000000 +0100
-+++ src/files.c	2003-10-05 15:58:04.000000000 +0200
-@@ -630,6 +630,7 @@
- void FS_SetGamedir (char *dir)
- {
+--- quake2-0.3/src/files.c~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3/src/files.c	2010-01-31 21:27:32.244572453 +0200
+@@ -668,6 +668,7 @@
+ */
+ void FS_SetGamedir(char *dir){
  	searchpath_t	*next;
 +	cvar_t *cv;
- 
- 	if (strstr(dir, "..") || strstr(dir, "/")
- 		|| strstr(dir, "\\") || strstr(dir, ":") )
-@@ -654,10 +655,12 @@
+ 	
+ 	if(strstr(dir, "..") || strstr(dir, "/")
+ 			|| strstr(dir, "\\") || strstr(dir, ":")){
+@@ -688,11 +689,13 @@
+ 		Z_Free(fs_searchpaths);
  		fs_searchpaths = next;
  	}
- 
-+	cv = Cvar_Get ("stupid_nvidia_bug", "0", 0);
 +
++	cv = Cvar_Get ("stupid_nvidia_bug", "0", 0);
+ 	
  	//
  	// flush all data, so it will be forced to reload
  	//
--	if (dedicated && !dedicated->value)
-+	if (dedicated && !dedicated->value && !cv->value)
- 		Cbuf_AddText ("vid_restart\nsnd_restart\n");
- 
- 	// now add new entries for 
+-	if(dedicated && !dedicated->value)
++	if(dedicated && !dedicated->value && !cv->value)
+ 		Cbuf_AddText("vid_restart\nsnd_restart\n");
+ 		
+ 	// now add new entries for

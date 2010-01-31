@@ -12,36 +12,25 @@
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <errno.h>
---- quake2-0.3/src/gl_fxmesa.c.orig	2007-04-28 13:39:07.868871000 +0200
-+++ quake2-0.3/src/gl_fxmesa.c	2007-04-28 13:48:27.456760766 +0200
-@@ -190,7 +190,7 @@ int GLimp_SetMode( unsigned int *pwidth,
- 
- 	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
- 
--	if ( !ri.Vid_GetModeInfo( &width, &height, mode ) )
-+	if ( !ri.Vid_GetModeInfo( (unsigned int *)&width, (unsigned int *)&height, mode ) )
- 	{
- 		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
+--- quake2-0.3.1/src/gl_fxmesa.c~	2010-01-31 21:30:28.000000000 +0200
++++ quake2-0.3.1/src/gl_fxmesa.c	2010-01-31 21:31:31.414537554 +0200
+@@ -186,7 +186,7 @@
+ 	
+ 	ri.Con_Printf(PRINT_ALL, "...setting mode %d:", mode);
+ 	
+-	if( !ri.Vid_GetModeInfo( &width, &height, mode)){
++	if( !ri.Vid_GetModeInfo( (unsigned int *)&width, (unsigned int *)&height, mode)){
+ 		ri.Con_Printf( PRINT_ALL, " invalid mode\n");
  		return rserr_invalid_mode;
---- quake2-0.3/src/snd_ao.c.orig	2004-03-15 03:25:43.000000000 +0100
-+++ quake2-0.3/src/snd_ao.c	2007-04-28 13:50:31.543832086 +0200
-@@ -157,7 +157,7 @@ void SNDDMA_Submit(void) {
-     /* ao_play returns success, not number of samples successfully output
-      * unlike alsa or arts, so we can only assume that the whole buffer
-      * made it out... though this makes updating si->dma->samplepos easy */
--    if (ao_play(device, si->dma->buffer, si->dma->samples * samplesize) == 0) {
-+    if (ao_play(device, (char *)si->dma->buffer, si->dma->samples * samplesize) == 0) {
- 	Com_Printf("W: error occurred while playing buffer\n");
- 	ao_close(device);
- 	ao_shutdown();
---- quake2-0.3/src/snd_alsa.c.orig	2004-03-15 03:25:43.000000000 +0100
-+++ quake2-0.3/src/snd_alsa.c	2007-04-28 13:51:39.407699427 +0200
-@@ -101,7 +101,7 @@ qboolean SNDDMA_Init(struct sndinfo * s)
-     if (!si->dma->speed) {
- 	for (i = 0; i < sizeof(tryrates); i++) {
- 	    int dir = 0;
--	    int test = tryrates[i];
-+	    unsigned int test = tryrates[i];
- 
- 	    if ((err = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params,
- 						       &test, &dir)) < 0) {
+ 	}
+--- quake2-0.3.1/src/snd_ao.c~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/snd_ao.c	2010-01-31 21:32:28.668015776 +0200
+@@ -157,7 +157,7 @@
+ 	/* ao_play returns success, not number of samples successfully output
+ 	 * unlike alsa or arts, so we can only assume that the whole buffer
+ 	 * made it out... though this makes updating si->dma->samplepos easy */
+-	if(ao_play(device, si->dma->buffer, si->dma->samples * samplesize) == 0){
++	if(ao_play(device, (char *)si->dma->buffer, si->dma->samples * samplesize) == 0){
+ 		Com_Printf("W: error occurred while playing buffer\n");
+ 		ao_close(device);
+ 		ao_shutdown();

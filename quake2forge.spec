@@ -5,17 +5,21 @@
 %bcond_with	rogue	# with Rogue ("Ground Zero") Mission Pack  (non-distributable package)
 %bcond_with	xatrix	# with Xatrix ("The Reckoning") Mission Pack  (non-distributable package)
 #
+%define		svnrev	11886
+%define		rel		0.1
 Summary:	Quake2Forge - improved version of id Software's classic Quake II engine
 Summary(pl.UTF-8):	Quake2Forge - ulepszona wersja klasycznego silnika Quake II firmy id Software
 Name:		quake2forge
-Version:	0.3
-Release:	3
+Version:	0.3.1
+Release:	0.%{svnrev}.%{rel}
 License:	GPL (for main code only)
 Group:		Applications/Games
 # http://dl.sourceforge.net/quake/quake2-%{version}.tar.gz [but no 0.3 yet]
 # ftp://ftp.quakeforge.net/quake2forge/quake2-%{version}.tar.gz [dead]
-Source0:	quake2-%{version}.tar.gz
-# Source0-md5:	2c167ff7edce20f0240316b98a1e4515
+# svn co -q https://quake.svn.sourceforge.net/svnroot/quake/quake2/trunk quake2-0.3.1
+# tar -cjf quake2-0.3.1-r$(svnversion quake2).tar.bz2 --exclude=.svn quake2-0.3.1
+Source0:	quake2-%{version}-r%{svnrev}.tar.bz2
+# Source0-md5:	d95b5bb394d40c4a6121f63cab9bca77
 #Source1:	multiplay pack (need to check licence)
 # ftp://ftp.idsoftware.com/idstuff/quake2/q2-3.20-x86-full.exe
 Source2:	%{name}-server.conf
@@ -34,10 +38,10 @@ Patch0:		%{name}-stupid_nvidia_bug.patch
 Patch1:		%{name}-gl.patch
 Patch2:		%{name}-ac.patch
 Patch3:		%{name}-fix.patch
-Patch4:		%{name}-gamedir.patch
-Patch5:		%{name}-missionpacks.patch
 Patch6:		%{name}-rogue-fix.patch
 Patch7:		%{name}-xatrix-fix.patch
+Patch8:		xf86dga.h-obsolete.patch
+Patch9:		ignore-warning.patch
 URL:		http://www.quakeforge.net/
 BuildRequires:	OpenGL-GLX-devel
 BuildRequires:	SDL-devel
@@ -282,12 +286,10 @@ Quake2Forge: The Reckoning (zestaw misji).
 
 %prep
 %setup -q -n quake2-%{version}
-%patch0
+%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
 %if %{with rogue}
 cd src/rogue
@@ -304,6 +306,8 @@ echo yes| sh xatrix.shar
 cd ../..
 %patch7 -p1
 %endif
+%patch8 -p1
+%patch9 -p1
 
 %build
 %{__libtoolize}
@@ -331,18 +335,18 @@ install -d $RPM_BUILD_ROOT{%{_gamedatadir}/baseq2,%{_gamehomedir}/.quake2/baseq2
 	$RPM_BUILD_ROOT{/etc/sysconfig,/etc/rc.d/init.d} \
 	$RPM_BUILD_ROOT{%{_pixmapsdir},%{_desktopdir}}
 
-install %{SOURCE2} $RPM_BUILD_ROOT%{_gamehomedir}/.quake2/baseq2/server.cfg
-install %{SOURCE7} $RPM_BUILD_ROOT%{_gamehomedir}/.screenrc
-install %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/q2ded
-install %{SOURCE4} $RPM_BUILD_ROOT%{_pixmapsdir}
-install %{SOURCE5} $RPM_BUILD_ROOT%{_desktopdir}/%{name}.desktop
-install %{SOURCE6} $RPM_BUILD_ROOT/etc/sysconfig/q2ded
+cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_gamehomedir}/.quake2/baseq2/server.cfg
+cp -a %{SOURCE7} $RPM_BUILD_ROOT%{_gamehomedir}/.screenrc
+install -p %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/q2ded
+cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_pixmapsdir}
+cp -a %{SOURCE5} $RPM_BUILD_ROOT%{_desktopdir}/%{name}.desktop
+cp -a %{SOURCE6} $RPM_BUILD_ROOT/etc/sysconfig/q2ded
 
 %if %{with rogue}
-install %{SOURCE8} $RPM_BUILD_ROOT%{_desktopdir}/%{name}-rogue.desktop
+cp -a %{SOURCE8} $RPM_BUILD_ROOT%{_desktopdir}/%{name}-rogue.desktop
 %endif
 %if %{with xatrix}
-install %{SOURCE8} $RPM_BUILD_ROOT%{_desktopdir}/%{name}-xatrix.desktop
+cp -a %{SOURCE8} $RPM_BUILD_ROOT%{_desktopdir}/%{name}-xatrix.desktop
 %endif
 
 rm -rf _doc
