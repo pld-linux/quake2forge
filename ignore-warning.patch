@@ -1,0 +1,597 @@
+--- /dev/null	2007-02-13 18:29:53.000000000 +0200
++++ quake2-0.3.1/src/ignore-value.h	2010-01-31 22:18:25.434267127 +0200
+@@ -0,0 +1,40 @@
++/* ignore a function return without a compiler warning
++
++   Copyright (C) 2008-2010 Free Software Foundation, Inc.
++
++   This program is free software: you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation; either version 3 of the License, or
++   (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++
++/* Written by Jim Meyering.  */
++
++/* Use these functions to avoid a warning when using a function declared with
++   gcc's warn_unused_result attribute, but for which you really do want to
++   ignore the result.  Traditionally, people have used a "(void)" cast to
++   indicate that a function's return value is deliberately unused.  However,
++   if the function is declared with __attribute__((warn_unused_result)),
++   gcc issues a warning even with the cast.
++
++   Caution: most of the time, you really should heed gcc's warning, and
++   check the return value.  However, in those exceptional cases in which
++   you're sure you know what you're doing, use this function.
++
++   For the record, here's one of the ignorable warnings:
++   "copy.c:233: warning: ignoring return value of 'fchown',
++   declared with attribute warn_unused_result".  */
++
++#ifndef __IGNORE_VALUE_H__
++#define __IGNORE_VALUE_H__
++static inline void ignore_value (int i) { (void) i; }
++static inline void ignore_ptr (void* p) { (void) p; }
++/* FIXME: what about aggregate types? */
++#endif
+--- quake2-0.3.1/src/client.h~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/client.h	2010-01-31 22:07:46.198069211 +0200
+@@ -38,6 +38,7 @@
+ #include <stdlib.h>
+ 
+ #include "ref.h"
++#include "ignore-value.h"
+ 
+ #include "vid.h"
+ #include "screen.h"
+--- quake2-0.3.1/src/qcommon.h~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/qcommon.h	2010-01-31 22:11:36.158802614 +0200
+@@ -27,6 +27,7 @@
+ 
+ #include "gcc_attr.h"
+ #include "q_shared.h"
++#include "ignore-value.h"
+ 
+ #define	BASEDIRNAME	"baseq2"
+ 
+--- quake2-0.3.1/src/server.h~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/server.h	2010-01-31 22:20:52.157581428 +0200
+@@ -25,6 +25,7 @@
+ #include "gcc_attr.h"
+ #include "qcommon.h"
+ #include "game.h"
++#include "ignore-value.h"
+ 
+ //=============================================================================
+ 
+--- quake2-0.3.1/src/r_misc.c~	2010-01-31 21:46:49.000000000 +0200
++++ quake2-0.3.1/src/r_misc.c	2010-01-31 21:46:52.017826783 +0200
+@@ -574,8 +574,8 @@
+ 	if(!f)
+ 		ri.Con_Printf(PRINT_ALL, "Failed to open to %s\n", filename);
+ 	else {
+-		fwrite((void *)pcx, 1, length, f);
+-		fclose(f);
++		ignore_value(fwrite((void *)pcx, 1, length, f));
++		fclose(f);
+ 	}
+ 	
+ 	free(pcx);
+--- quake2-0.3.1/src/gl_rmisc.c~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/gl_rmisc.c	2010-01-31 21:47:47.214855545 +0200
+@@ -161,7 +161,7 @@
+ 	}
+ 	
+ 	f = fopen(checkname, "wb");
+-	fwrite(buffer, 1, c, f);
++	ignore_value(fwrite(buffer, 1, c, f));
+ 	fclose(f);
+ 	
+ 	free(buffer);
+--- quake2-0.3.1/src/cl_main.c~	2010-01-31 22:06:45.000000000 +0200
++++ quake2-0.3.1/src/cl_main.c	2010-01-31 22:06:47.118283240 +0200
+@@ -117,8 +118,8 @@
+ 	// the first eight bytes are just packet sequencing stuff
+ 	len = net_message.cursize - 8;
+ 	swlen = LittleLong(len);
+-	fwrite(&swlen, 4, 1, cls.demofile);
+-	fwrite(net_message.data + 8, len, 1, cls.demofile);
++	ignore_value(fwrite(&swlen, 4, 1, cls.demofile));
++	ignore_value(fwrite(net_message.data + 8, len, 1, cls.demofile));
+ }
+ 
+ 
+@@ -139,7 +140,7 @@
+ 	
+ 	// finish up
+ 	len = -1;
+-	fwrite(&len, 4, 1, cls.demofile);
++	ignore_value(fwrite(&len, 4, 1, cls.demofile));
+ 	fclose(cls.demofile);
+ 	cls.demofile = NULL;
+ 	cls.demorecording = false;
+@@ -216,8 +217,8 @@
+ 		if(cl.configstrings[i][0]){
+ 			if(buf.cursize + strlen(cl.configstrings[i]) + 32 > buf.maxsize){	// write it out
+ 				len = LittleLong(buf.cursize);
+-				fwrite(&len, 4, 1, cls.demofile);
+-				fwrite(buf.data, buf.cursize, 1, cls.demofile);
++				ignore_value(fwrite(&len, 4, 1, cls.demofile));
++				ignore_value(fwrite(buf.data, buf.cursize, 1, cls.demofile));
+ 				buf.cursize = 0;
+ 			}
+ 			
+@@ -237,8 +238,8 @@
+ 			
+ 		if(buf.cursize + 64 > buf.maxsize){	// write it out
+ 			len = LittleLong(buf.cursize);
+-			fwrite(&len, 4, 1, cls.demofile);
+-			fwrite(buf.data, buf.cursize, 1, cls.demofile);
++			ignore_value(fwrite(&len, 4, 1, cls.demofile));
++			ignore_value(fwrite(buf.data, buf.cursize, 1, cls.demofile));
+ 			buf.cursize = 0;
+ 		}
+ 		
+@@ -252,8 +253,8 @@
+ 	// write it to the demo file
+ 	
+ 	len = LittleLong(buf.cursize);
+-	fwrite(&len, 4, 1, cls.demofile);
+-	fwrite(buf.data, buf.cursize, 1, cls.demofile);
++	ignore_value(fwrite(&len, 4, 1, cls.demofile));
++	ignore_value(fwrite(buf.data, buf.cursize, 1, cls.demofile));
+ 	
+ 	// the rest of the demo file will be individual frames
+ }
+--- quake2-0.3.1/src/cl_parse.c~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/cl_parse.c	2010-01-31 22:08:48.200994146 +0200
+@@ -222,7 +222,7 @@
+ 		}
+ 	}
+ 	
+-	fwrite(net_message.data + net_message.readcount, 1, size, cls.download);
++	ignore_value(fwrite(net_message.data + net_message.readcount, 1, size, cls.download));
+ 	net_message.readcount += size;
+ 	
+ 	if(percent != 100){
+--- quake2-0.3.1/src/menu.c~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/menu.c	2010-01-31 22:09:50.840974413 +0200
+@@ -2417,7 +2417,7 @@
+ #endif
+ 		
+ 		buffer = malloc( length);
+-		fread( buffer, length, 1, fp);
++		ignore_value(fread( buffer, length, 1, fp));
+ 	}
+ 	
+ 	s = buffer;
+--- quake2-0.3.1/src/cmodel.c~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/cmodel.c	2010-01-31 22:11:01.432008339 +0200
+@@ -1599,7 +1600,7 @@
+ ===================
+ */
+ void	CM_WritePortalState(FILE *f){
+-	fwrite(portalopen, sizeof(portalopen), 1, f);
++	ignore_value(fwrite(portalopen, sizeof(portalopen), 1, f));
+ }
+ 
+ /*
+--- quake2-0.3.1/src/files.c~	2010-01-31 21:38:40.000000000 +0200
++++ quake2-0.3.1/src/files.c	2010-01-31 22:12:41.404289713 +0200
+@@ -452,7 +452,7 @@
+ 		
+ #ifndef HAVE_ZIP
+ 		
+-	fread(&header, 1, sizeof(header), packhandle);
++	ignore_value(fread(&header, 1, sizeof(header), packhandle));
+ 	if(LittleLong(header.ident) != IDPAKHEADER)
+ 		Com_Error(ERR_FATAL, "%s is not a packfile", packfile);
+ 	header.dirofs = LittleLong(header.dirofs);
+@@ -466,7 +466,7 @@
+ 	newfiles = Z_Malloc(numpackfiles * sizeof(packfile_t));
+ 	
+ 	fseek(packhandle, header.dirofs, SEEK_SET);
+-	fread(info, 1, header.dirlen, packhandle);
++	ignore_value(fread(info, 1, header.dirlen, packhandle));
+ 	
+ 	/* crc the directory to check for modifications */
+ 	checksum = Com_BlockChecksum((void *)info, header.dirlen);
+--- quake2-0.3.1/src/sv_ccmds.c~	2010-01-31 22:23:34.000000000 +0200
++++ quake2-0.3.1/src/sv_ccmds.c	2010-01-31 22:23:36.724224738 +0200
+@@ -200,7 +200,7 @@
+ 		l = fread(buffer, 1, sizeof(buffer), f1);
+ 		if(!l)
+ 			break;
+-		fwrite(buffer, 1, l, f2);
++		ignore_value(fwrite(buffer, 1, l, f2));
+ 	}
+ 	
+ 	fclose(f1);
+@@ -273,7 +273,7 @@
+ 		Com_Printf("Failed to open %s\n", name);
+ 		return;
+ 	}
+-	fwrite(sv.configstrings, sizeof(sv.configstrings), 1, f);
++	ignore_value(fwrite(sv.configstrings, sizeof(sv.configstrings), 1, f));
+ 	CM_WritePortalState(f);
+ 	fclose(f);
+ 	
+@@ -343,10 +343,10 @@
+ 		Com_sprintf(comment, sizeof(comment), "ENTERING %s", sv.configstrings[CS_NAME]);
+ 	}
+ 	
+-	fwrite(comment, 1, sizeof(comment), f);
++	ignore_value(fwrite(comment, 1, sizeof(comment), f));
+ 	
+ 	// write the mapcmd
+-	fwrite(svs.mapcmd, 1, sizeof(svs.mapcmd), f);
++	ignore_value(fwrite(svs.mapcmd, 1, sizeof(svs.mapcmd), f));
+ 	
+ 	// write all CVAR_LATCH cvars
+ 	// these will be things like coop, skill, deathmatch, etc
+@@ -362,8 +362,8 @@
+ 		memset(string, 0, sizeof(string));
+ 		strcpy(name, var->name);
+ 		strcpy(string, var->string);
+-		fwrite(name, 1, sizeof(name), f);
+-		fwrite(string, 1, sizeof(string), f);
++		ignore_value(fwrite(name, 1, sizeof(name), f));
++		ignore_value(fwrite(string, 1, sizeof(string), f));
+ 	}
+ 	
+ 	fclose(f);
+@@ -882,8 +882,8 @@
+ 	// write it to the demo file
+ 	Com_DPrintf("signon message length: %i\n", buf.cursize);
+ 	len = LittleLong(buf.cursize);
+-	fwrite(&len, 4, 1, svs.demofile);
+-	fwrite(buf.data, buf.cursize, 1, svs.demofile);
++	ignore_value(fwrite(&len, 4, 1, svs.demofile));
++	ignore_value(fwrite(buf.data, buf.cursize, 1, svs.demofile));
+ 	
+ 	// the rest of the demo file will be individual frames
+ }
+--- quake2-0.3.1/src/sv_ents.c~	2010-01-31 16:54:57.000000000 +0200
++++ quake2-0.3.1/src/sv_ents.c	2010-01-31 22:25:18.297547458 +0200
+@@ -677,7 +677,7 @@
+ 	
+ 	// now write the entire message to the file, prefixed by the length
+ 	len = LittleLong(buf.cursize);
+-	fwrite(&len, 4, 1, svs.demofile);
+-	fwrite(buf.data, buf.cursize, 1, svs.demofile);
++	ignore_value(fwrite(&len, 4, 1, svs.demofile));
++	ignore_value(fwrite(buf.data, buf.cursize, 1, svs.demofile));
+ }
+ 
+--- quake2-0.3.1/src/baseq2/g_save.c~	2010-01-31 22:30:12.000000000 +0200
++++ quake2-0.3.1/src/baseq2/g_save.c	2010-01-31 22:30:15.934193760 +0200
+@@ -20,6 +20,7 @@
+ */
+ 
+ #include "g_local.h"
++#include "ignore-value.h"
+ 
+ #define Function(f){#f, f}
+ 
+@@ -307,7 +308,7 @@
+ 		case F_LSTRING:
+ 			if( *(char **)p){
+ 				len = strlen(*(char **)p) + 1;
+-				fwrite(*(char **)p, len, 1, f);
++				ignore_value(fwrite(*(char **)p, len, 1, f));
+ 			}
+ 			break;
+ 		default:
+@@ -340,7 +341,7 @@
+ 				/* SBF: FIXME: 32 extra bytes alloc'd since the saved
+ 				 * string might not be long enough */
+ 				*(char **) p = gi.TagMalloc(len + 32, TAG_LEVEL);
+-				fread(*(char **)p, len, 1, f);
++				ignore_value(fread(*(char **)p, len, 1, f));
+ 			}
+ 			break;
+ 		case F_EDICT:
+@@ -410,7 +411,7 @@
+ 	}
+ 	
+ 	// write the block
+-	fwrite(&temp, sizeof(temp), 1, f);
++	ignore_value(fwrite(&temp, sizeof(temp), 1, f));
+ 	
+ 	// now write any allocated data following the edict
+ 	for(field = clientfields; field->name; field++){
+@@ -428,7 +429,7 @@
+ void ReadClient(FILE *f, gclient_t *client){
+ 	field_t	*field;
+ 	
+-	fread(client, sizeof(*client), 1, f);
++	ignore_value(fread(client, sizeof(*client), 1, f));
+ 	
+ 	for(field = clientfields; field->name; field++){
+ 		ReadField(f, field,(byte *)client);
+@@ -463,10 +464,10 @@
+ 		
+ 	memset(str, 0, sizeof(str));
+ 	strcpy(str, __DATE__);
+-	fwrite(str, sizeof(str), 1, f);
++	ignore_value(fwrite(str, sizeof(str), 1, f));
+ 	
+ 	game.autosaved = autosave;
+-	fwrite(&game, sizeof(game), 1, f);
++	ignore_value(fwrite(&game, sizeof(game), 1, f));
+ 	game.autosaved = false;
+ 	
+ 	for(i = 0; i < game.maxclients; i++)
+@@ -486,7 +487,7 @@
+ 	if(!f)
+ 		gi.error("Couldn't open %s", filename);
+ 		
+-	fread(str, sizeof(str), 1, f);
++	ignore_value(fread(str, sizeof(str), 1, f));
+ 	if(strcmp(str, __DATE__)){
+ 		fclose(f);
+ 		gi.error("Savegame from an older version.\n");
+@@ -495,7 +496,7 @@
+ 	g_edicts = gi.TagMalloc(game.maxentities * sizeof(g_edicts[0]), TAG_GAME);
+ 	globals.edicts = g_edicts;
+ 	
+-	fread(&game, sizeof(game), 1, f);
++	ignore_value(fread(&game, sizeof(game), 1, f));
+ 	game.clients = gi.TagMalloc(game.maxclients * sizeof(game.clients[0]), TAG_GAME);
+ 	for(i = 0; i < game.maxclients; i++)
+ 		ReadClient(f, &game.clients[i]);
+@@ -526,7 +527,7 @@
+ 	}
+ 	
+ 	// write the block
+-	fwrite(&temp, sizeof(temp), 1, f);
++	ignore_value(fwrite(&temp, sizeof(temp), 1, f));
+ 	
+ 	// now write any allocated data following the edict
+ 	for(field = fields; field->name; field++){
+@@ -555,7 +556,7 @@
+ 	}
+ 	
+ 	// write the block
+-	fwrite(&temp, sizeof(temp), 1, f);
++	ignore_value(fwrite(&temp, sizeof(temp), 1, f));
+ 	
+ 	// now write any allocated data following the edict
+ 	for(field = levelfields; field->name; field++){
+@@ -574,7 +575,7 @@
+ void ReadEdict(FILE *f, edict_t *ent){
+ 	field_t	*field;
+ 	
+-	fread(ent, sizeof(*ent), 1, f);
++	ignore_value(fread(ent, sizeof(*ent), 1, f));
+ 	
+ 	for(field = fields; field->name; field++){
+ 		ReadField(f, field,(byte *)ent);
+@@ -591,7 +592,7 @@
+ void ReadLevelLocals(FILE *f){
+ 	field_t	*field;
+ 	
+-	fread(&level, sizeof(level), 1, f);
++	ignore_value(fread(&level, sizeof(level), 1, f));
+ 	
+ 	for(field = levelfields; field->name; field++){
+ 		ReadField(f, field,(byte *)&level);
+@@ -616,11 +617,11 @@
+ 		
+ 	// write out edict size for checking
+ 	i = sizeof(edict_t);
+-	fwrite(&i, sizeof(i), 1, f);
++	ignore_value(fwrite(&i, sizeof(i), 1, f));
+ 	
+ 	// write out a function pointer for checking
+ 	base =(void *)InitGame;
+-	fwrite(&base, sizeof(base), 1, f);
++	ignore_value(fwrite(&base, sizeof(base), 1, f));
+ 	
+ 	// write out level_locals_t
+ 	WriteLevelLocals(f);
+@@ -630,11 +631,11 @@
+ 		ent = &g_edicts[i];
+ 		if(!ent->inuse)
+ 			continue;
+-		fwrite(&i, sizeof(i), 1, f);
++		ignore_value(fwrite(&i, sizeof(i), 1, f));
+ 		WriteEdict(f, ent);
+ 	}
+ 	i = -1;
+-	fwrite(&i, sizeof(i), 1, f);
++	ignore_value(fwrite(&i, sizeof(i), 1, f));
+ 	
+ 	fclose(f);
+ }
+@@ -676,14 +677,14 @@
+ 	globals.num_edicts = maxclients->value + 1;
+ 	
+ 	// check edict size
+-	fread(&i, sizeof(i), 1, f);
++	ignore_value(fread(&i, sizeof(i), 1, f));
+ 	if(i != sizeof(edict_t)){
+ 		fclose(f);
+ 		gi.error("ReadLevel: mismatched edict size");
+ 	}
+ 	
+ 	// check function pointer base address
+-	fread(&base, sizeof(base), 1, f);
++	ignore_value(fread(&base, sizeof(base), 1, f));
+ #ifdef _WIN32
+ 	
+ 	if(base !=(void *)InitGame){
+--- quake2-0.3.1/src/ctf/g_save.c~	2010-01-31 22:34:34.000000000 +0200
++++ quake2-0.3.1/src/ctf/g_save.c	2010-01-31 22:34:37.447907899 +0200
+@@ -20,6 +20,7 @@
+ */
+ 
+ #include "g_local.h"
++#include "ignore-value.h"
+ 
+ field_t fields[] = {
+ 					   {"classname", FOFS(classname), F_LSTRING},
+@@ -295,7 +296,7 @@
+ 		case F_GSTRING:
+ 			if( *(char **)p){
+ 				len = strlen(*(char **)p) + 1;
+-				fwrite(*(char **)p, len, 1, f);
++				ignore_value(fwrite(*(char **)p, len, 1, f));
+ 			}
+ 			break;
+ 		default:
+@@ -325,7 +326,7 @@
+ 				/* FIXME -- 32 extra bytes alloc'd since the saved string
+ 				   might not be long enough */
+ 				*(char **) p = gi.TagMalloc(len + 32, TAG_LEVEL);
+-				fread(*(char **) p, len, 1, f);
++				ignore_value(fread(*(char **) p, len, 1, f));
+ 			}
+ 			break;
+ 		case F_GSTRING:
+@@ -334,7 +335,7 @@
+ 				*(char **)p = NULL;
+ 			else {
+ 				*(char **)p = gi.TagMalloc(len, TAG_GAME);
+-				fread(*(char **)p, len, 1, f);
++				ignore_value(fread(*(char **)p, len, 1, f));
+ 			}
+ 			break;
+ 		case F_EDICT:
+@@ -386,7 +387,7 @@
+ 	}
+ 	
+ 	// write the block
+-	fwrite(&temp, sizeof(temp), 1, f);
++	ignore_value(fwrite(&temp, sizeof(temp), 1, f));
+ 	
+ 	// now write any allocated data following the edict
+ 	for(field = clientfields; field->name; field++){
+@@ -404,7 +405,7 @@
+ void ReadClient(FILE *f, gclient_t *client){
+ 	field_t	*field;
+ 	
+-	fread(client, sizeof(*client), 1, f);
++	ignore_value(fread(client, sizeof(*client), 1, f));
+ 	
+ 	for(field = clientfields; field->name; field++){
+ 		ReadField(f, field,(byte *)client);
+@@ -439,10 +440,10 @@
+ 		
+ 	memset(str, 0, sizeof(str));
+ 	strcpy(str, __DATE__);
+-	fwrite(str, sizeof(str), 1, f);
++	ignore_value(fwrite(str, sizeof(str), 1, f));
+ 	
+ 	game.autosaved = autosave;
+-	fwrite(&game, sizeof(game), 1, f);
++	ignore_value(fwrite(&game, sizeof(game), 1, f));
+ 	game.autosaved = false;
+ 	
+ 	for(i = 0; i < game.maxclients; i++)
+@@ -462,7 +463,7 @@
+ 	if(!f)
+ 		gi.error("Couldn't open %s", filename);
+ 		
+-	fread(str, sizeof(str), 1, f);
++	ignore_value(fread(str, sizeof(str), 1, f));
+ 	if(strcmp(str, __DATE__)){
+ 		fclose(f);
+ 		gi.error("Savegame from an older version.\n");
+@@ -471,7 +472,7 @@
+ 	g_edicts = gi.TagMalloc(game.maxentities * sizeof(g_edicts[0]), TAG_GAME);
+ 	globals.edicts = g_edicts;
+ 	
+-	fread(&game, sizeof(game), 1, f);
++	ignore_value(fread(&game, sizeof(game), 1, f));
+ 	game.clients = gi.TagMalloc(game.maxclients * sizeof(game.clients[0]), TAG_GAME);
+ 	for(i = 0; i < game.maxclients; i++)
+ 		ReadClient(f, &game.clients[i]);
+@@ -502,7 +503,7 @@
+ 	}
+ 	
+ 	// write the block
+-	fwrite(&temp, sizeof(temp), 1, f);
++	ignore_value(fwrite(&temp, sizeof(temp), 1, f));
+ 	
+ 	// now write any allocated data following the edict
+ 	for(field = savefields; field->name; field++){
+@@ -531,7 +532,7 @@
+ 	}
+ 	
+ 	// write the block
+-	fwrite(&temp, sizeof(temp), 1, f);
++	ignore_value(fwrite(&temp, sizeof(temp), 1, f));
+ 	
+ 	// now write any allocated data following the edict
+ 	for(field = levelfields; field->name; field++){
+@@ -550,7 +551,7 @@
+ void ReadEdict(FILE *f, edict_t *ent){
+ 	field_t	*field;
+ 	
+-	fread(ent, sizeof(*ent), 1, f);
++	ignore_value(fread(ent, sizeof(*ent), 1, f));
+ 	
+ 	for(field = savefields; field->name; field++){
+ 		ReadField(f, field,(byte *)ent);
+@@ -567,7 +568,7 @@
+ void ReadLevelLocals(FILE *f){
+ 	field_t	*field;
+ 	
+-	fread(&level, sizeof(level), 1, f);
++	ignore_value(fread(&level, sizeof(level), 1, f));
+ 	
+ 	for(field = levelfields; field->name; field++){
+ 		ReadField(f, field,(byte *)&level);
+@@ -592,11 +593,11 @@
+ 		
+ 	// write out edict size for checking
+ 	i = sizeof(edict_t);
+-	fwrite(&i, sizeof(i), 1, f);
++	ignore_value(fwrite(&i, sizeof(i), 1, f));
+ 	
+ 	// write out a function pointer for checking
+ 	base =(void *)InitGame;
+-	fwrite(&base, sizeof(base), 1, f);
++	ignore_value(fwrite(&base, sizeof(base), 1, f));
+ 	
+ 	// write out level_locals_t
+ 	WriteLevelLocals(f);
+@@ -606,11 +607,11 @@
+ 		ent = &g_edicts[i];
+ 		if(!ent->inuse)
+ 			continue;
+-		fwrite(&i, sizeof(i), 1, f);
++		ignore_value(fwrite(&i, sizeof(i), 1, f));
+ 		WriteEdict(f, ent);
+ 	}
+ 	i = -1;
+-	fwrite(&i, sizeof(i), 1, f);
++	ignore_value(fwrite(&i, sizeof(i), 1, f));
+ 	
+ 	fclose(f);
+ }
+@@ -652,14 +653,14 @@
+ 	globals.num_edicts = maxclients->value + 1;
+ 	
+ 	// check edict size
+-	fread(&i, sizeof(i), 1, f);
++	ignore_value(fread(&i, sizeof(i), 1, f));
+ 	if(i != sizeof(edict_t)){
+ 		fclose(f);
+ 		gi.error("ReadLevel: mismatched edict size");
+ 	}
+ 	
+ 	// check function pointer base address
+-	fread(&base, sizeof(base), 1, f);
++	ignore_value(fread(&base, sizeof(base), 1, f));
+ 	if(base !=(void *)InitGame){
+ 		fclose(f);
+ 		gi.error("ReadLevel: function pointers have moved");
